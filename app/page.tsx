@@ -4,16 +4,44 @@ import { useState } from "react";
 
 export default function Home() {
   const [mode, setMode] = useState("login");
-
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  function handleLogin() {
-    alert(`Login: ${username}`);
+  async function handleLogin() {
+    const res = await fetch("/api/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username, password }),
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      alert("Login success: " + data.user.username);
+    } else {
+      alert(data.message);
+    }
   }
 
-  function handleSignup() {
-    alert(`Signup: ${username}`);
+  async function handleSignup() {
+    const res = await fetch("/api/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username, password }),
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      alert("Account created!");
+      setMode("login");
+    } else {
+      alert(data.message);
+    }
   }
 
   return (
@@ -25,10 +53,17 @@ export default function Home() {
         </h1>
 
         <div className="flex justify-center gap-4 mb-4">
-          <button onClick={() => setMode("login")}>
+          <button
+            onClick={() => setMode("login")}
+            className={mode === "login" ? "font-bold" : ""}
+          >
             Login
           </button>
-          <button onClick={() => setMode("signup")}>
+
+          <button
+            onClick={() => setMode("signup")}
+            className={mode === "signup" ? "font-bold" : ""}
+          >
             Sign Up
           </button>
         </div>
